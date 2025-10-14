@@ -7,6 +7,64 @@
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
   <link rel="stylesheet" href="style.css">
+  <style>
+    .blog-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .blog-card {
+      display: flex;
+      background: var(--light);
+      border-radius: 12px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      transition: 0.3s;
+    }
+
+    .blog-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .blog-thumb {
+      width: 40%;
+      object-fit: cover;
+      height: 260px;
+    }
+
+    .blog-content {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .blog-content h3 {
+      color: var(--dark);
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .blog-content p {
+      color: var(--secondary);
+      margin: 0.6rem 0 1rem;
+    }
+
+    .read-more {
+      color: var(--secondary-color);
+      font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+      .blog-card {
+        flex-direction: column;
+      }
+      .blog-thumb {
+        width: 100%;
+        height: 200px;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -55,7 +113,9 @@
 
   <!-- JavaScript fetch API -->
   <script>
-    fetch("https://yoga-blog-backend.onrender.com/api/blogs")
+    const API_URL = "https://uynphuongyoga.onrender.com/api/blogs"; // ✅ trỏ đúng backend Render
+
+    fetch(API_URL)
       .then(res => res.json())
       .then(blogs => {
         const container = document.querySelector(".blog-grid");
@@ -67,7 +127,7 @@
 
         container.innerHTML = blogs.map(b => `
           <article class="blog-card">
-            <img src="http://localhost:5000${b.image}" alt="" class="blog-thumb">
+            <img src="${b.image ? `https://uynphuongyoga.onrender.com${b.image}` : './assets/no-image.jpg'}" alt="${b.title}" class="blog-thumb">
             <div class="blog-content">
               <h3>${b.title}</h3>
               <p>${b.shortDescription}</p>
