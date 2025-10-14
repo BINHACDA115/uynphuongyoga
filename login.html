@@ -50,16 +50,13 @@
       const password = document.getElementById("password").value;
       const msg = document.getElementById("msg");
 
-      try {
-<<<<<<< HEAD
+       try {
         const res = await fetch("https://uynphuongyoga.onrender.com/api/auth/login", {
-=======
-        const res = await fetch("https://yoga-blog-backend.onrender.com/api/auth/login", {
->>>>>>> 1923a05f8e798f1b8e61e0c2fca5822d5faaa971
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, password })
         });
+        
         const data = await res.json();
 
         if (res.ok) {
