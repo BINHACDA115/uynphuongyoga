@@ -17,35 +17,37 @@
 
 <body>
   <!-- Header -->
-  <header id="header" class="shadow bg-light">
-    <nav class="container navbar">
-      <a href="#" class="nav-brand text-dark">
-        <img src="./assets/logo.png" alt="Gridy Yoga Logo">
-      </a>
+  <!-- Header -->
+<header id="header" class="shadow bg-light">
+  <nav class="container navbar">
+    <a href="#" class="nav-brand text-dark">
+      <img src="./assets/logo.png" alt="Gridy Yoga Logo">
+    </a>
 
-      <!-- toggle button -->
-      <button class="toggle-button">
-        <span><i class="fas fa-bars"></i></span>
-      </button>
+    <!-- ✅ thêm ID cho nút toggle -->
+    <button class="toggle-button" id="menu-toggle">
+      <span><i class="fas fa-bars"></i></span>
+    </button>
 
-      <!-- main menu -->
-      <div class="collapse">
-        <ul class="navbar-nav">
-          <a href="blog.html" class="nav-link">Blog</a>
-          <a href="contact.html" class="nav-link">Contact</a>
-        </ul>
-      </div>
+    <!-- ✅ thêm ID cho menu chính -->
+    <div class="collapse">
+      <ul class="navbar-nav" id="nav-links">
+        <a href="blog.html" class="nav-link">Blog</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </ul>
+    </div>
 
-      <!-- social menu -->
-      <div class="collapse">
-        <ul class="navbar-nav">
-          <a href="https://www.facebook.com/uyen.phuong.878507" target="_blank"><i class="fab fa-facebook-f"></i></a>
-          <a href="https://www.tiktok.com/@uyenphuong1611" target="_blank"><i class="fab fa-tiktok"></i></a>
-          <a href="admin.html" target="_blank"><i class="fa fa-check"></i></a>
-        </ul>
-      </div>
-    </nav>
-  </header>
+    <!-- social giữ nguyên -->
+    <div class="collapse">
+      <ul class="navbar-nav">
+        <a href="https://www.facebook.com/uyen.phuong.878507" target="_blank"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://www.tiktok.com/@uyenphuong1611" target="_blank"><i class="fab fa-tiktok"></i></a>
+        <a href="admin.html" target="_blank"><i class="fa fa-check"></i></a>
+      </ul>
+    </div>
+  </nav>
+</header>
+
 
   <!-- Main -->
   <main id="site-main">
@@ -141,4 +143,18 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/6.4.5/swiper-bundle.min.js"></script>
   <script src="main.js"></script>
 </body>
+<script>
+  // === Mobile menu toggle ===
+  const toggleBtn = document.getElementById("menu-toggle");
+  const navLinks = document.getElementById("nav-links");
+
+  toggleBtn.addEventListener("click", () => {
+    navLinks.classList.toggle("show");
+
+    // Đổi icon bars ↔ close
+    toggleBtn.innerHTML = navLinks.classList.contains("show")
+      ? '<i class="fas fa-times"></i>'
+      : '<i class="fas fa-bars"></i>';
+  });
+</script>
 </html>
