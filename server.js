@@ -10,7 +10,7 @@ const app = express();
 const PORT = 5000;
 
 // --- Kết nối MongoDB ---
-mongoose.connect("mongodb://127.0.0.1:27017/yoga_blog")
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB connected"))
   .catch(err => console.error("❌ DB error:", err));
 
