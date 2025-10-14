@@ -4,7 +4,7 @@ import path from "path";
 import fs from "fs";
 import Blog from "../models/Blog.js";
 import { verifyToken } from "./authRoutes.js";
-
+import { v2 as cloudinary } from "cloudinary";
 
 
 const router = express.Router();
@@ -55,21 +55,30 @@ router.get("/:id", async (req, res) => {
 });
 
 // --- Thêm bài viết mới (kèm upload ảnh) ---
-router.post("/", verifyToken, upload.single("image"), async (req, res) => {
+router.post("/", upload.single("image"), async (req, res) => {
   try {
-    const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
-    const newBlog = new Blog({
+    let imageUrl = "";
+    if (req.file) {
+      const uploadResult = await cloudinary.uploader.upload(req.file.path, {
+        folder: "uyenphuongyoga"  // 👈 tên folder trên Cloudinary
+      });
+      imageUrl = uploadResult.secure_url;
+    }
+
+    const blog = new Blog({
       title: req.body.title,
       shortDescription: req.body.shortDescription,
       content: req.body.content,
-      image: imageUrl
+      image: imageUrl, // 👈 lưu link cloudinary
     });
-    await newBlog.save();
-    res.json({ message: "Thêm bài viết thành công", blog: newBlog });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+
+    await blog.save();
+    res.status(201).json(blog);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
+
 
 // --- Cập nhật bài viết (có thể thay ảnh) ---
 router.put("/:id", verifyToken, upload.single("image"), async (req, res) => {
@@ -120,6 +129,12 @@ router.delete("/:id", verifyToken, async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+});
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET
 });
 
 
