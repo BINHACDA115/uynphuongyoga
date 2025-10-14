@@ -519,8 +519,12 @@ header {
 }
 /* === ARTICLE DETAIL PAGE === */
 .article-detail {
-  max-width: 850px;
-  margin: 0 auto;
+  max-width: 900px;
+  margin: auto;
+  background: var(--light);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
 }
 
 .article-content h2 {
@@ -531,10 +535,15 @@ header {
 }
 
 .article-text {
-  font-size: 1rem;
-  line-height: 1.8;
-  color: #333;
-  white-space: pre-line; /* giữ xuống dòng trong nội dung */
+  color: var(--dark);
+  line-height: 1.6;
+  text-align: justify;
+  margin-top: 1rem;
+}
+
+.article-content {
+  word-wrap: break-word;
+  white-space: pre-line;
 }
 
 .article-content img {
