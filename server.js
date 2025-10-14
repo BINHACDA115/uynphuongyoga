@@ -10,12 +10,19 @@ const app = express();
 const PORT = 5000;
 
 // --- Kết nối MongoDB ---
-mongoose.connect("mongodb://127.0.0.1:27017/yoga_blog")
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB connected"))
   .catch(err => console.error("❌ DB error:", err));
 
 // --- Middleware ---
-app.use(cors());
+app.use(cors({
+  origin: [
+    "https://https://uynphuongyoga.netlify.app",
+    "https://uynphuong-blog.netlify.app", // bạn có thể thêm domain thật sau khi đặt tên site
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
 app.use(express.json());
 
 // --- Cho phép truy cập file ảnh upload ---

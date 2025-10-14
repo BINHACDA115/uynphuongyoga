@@ -195,7 +195,7 @@
     const formTitle = document.getElementById("formTitle");
     const submitBtn = document.getElementById("submitBtn");
     const imgPreview = document.getElementById("imgPreview");
-    const API = "http://localhost:5000/api/blogs";
+    const API = "https://yoga-blog-backend.onrender.com/api/blogs";
     const tokenStored = localStorage.getItem("token");
     let editingId = null;
 
@@ -227,8 +227,7 @@
       try {
         const res = await fetch(editingId ? `${API}/${editingId}` : API, {
           method: editingId ? "PUT" : "POST",
-          headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
-,
+          headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` },
           body: formData
         });
 
