@@ -1,33 +1,21 @@
 import express from "express";
 import multer from "multer";
-import path from "path";
-import fs from "fs";
 import Blog from "../models/Blog.js";
 import { verifyToken } from "./authRoutes.js";
 import { v2 as cloudinary } from "cloudinary";
-
+import fs from "fs";
 
 const router = express.Router();
 
-// --- Đảm bảo thư mục uploads tồn tại ---
-const uploadDir = "uploads";
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
-  console.log("📂 Tạo thư mục 'uploads' mới.");
-}
-
-// --- Cấu hình multer ---
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    cb(null, Date.now() + ext);
-  }
+// ⚙️ Cấu hình Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
 });
 
-const upload = multer({ storage });
+// ⚙️ Cấu hình Multer (tạo file tạm)
+const upload = multer({ dest: "temp/" });
 
 /* ==========================
    🟢 API QUẢN LÝ BÀI VIẾT BLOG
@@ -54,89 +42,84 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// --- Thêm bài viết mới (kèm upload ảnh) ---
-router.post("/", upload.single("image"), async (req, res) => {
+// --- 🆕 Thêm bài viết mới (upload lên Cloudinary) ---
+router.post("/", verifyToken, upload.single("image"), async (req, res) => {
   try {
     let imageUrl = "";
+
     if (req.file) {
-      const uploadResult = await cloudinary.uploader.upload(req.file.path, {
-        folder: "uyenphuongyoga"  // 👈 tên folder trên Cloudinary
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "uyenphuongyoga",
       });
-      imageUrl = uploadResult.secure_url;
+      imageUrl = result.secure_url;
+      fs.unlinkSync(req.file.path); // xóa file tạm
     }
 
     const blog = new Blog({
       title: req.body.title,
       shortDescription: req.body.shortDescription,
       content: req.body.content,
-      image: imageUrl, // 👈 lưu link cloudinary
+      image: imageUrl,
     });
 
     await blog.save();
     res.status(201).json(blog);
   } catch (err) {
+    console.error("❌ Upload Error:", err);
     res.status(500).json({ error: err.message });
   }
 });
 
-
-// --- Cập nhật bài viết (có thể thay ảnh) ---
+// --- ✏️ Cập nhật bài viết ---
 router.put("/:id", verifyToken, upload.single("image"), async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id);
     if (!blog) return res.status(404).json({ error: "Không tìm thấy bài viết" });
 
-    // Nếu có ảnh mới → xóa ảnh cũ (nếu tồn tại)
-    if (req.file && blog.image) {
-      const oldPath = path.join(process.cwd(), blog.image);
-      if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+    let imageUrl = blog.image;
+
+    // Nếu có ảnh mới → upload lên Cloudinary
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "uyenphuongyoga",
+      });
+      imageUrl = result.secure_url;
+      fs.unlinkSync(req.file.path);
     }
 
-    const updatedBlog = await Blog.findByIdAndUpdate(
-      req.params.id,
-      {
-        title: req.body.title,
-        shortDescription: req.body.shortDescription,
-        content: req.body.content,
-        image: req.file ? `/uploads/${req.file.filename}` : blog.image
-      },
-      { new: true }
-    );
+    blog.title = req.body.title;
+    blog.shortDescription = req.body.shortDescription;
+    blog.content = req.body.content;
+    blog.image = imageUrl;
 
-    res.json({ message: "Cập nhật thành công", blog: updatedBlog });
+    await blog.save();
+    res.json({ message: "✅ Cập nhật thành công", blog });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: error.message });
   }
 });
 
-// --- Xóa bài viết (và ảnh kèm theo) ---
+// --- 🗑 Xóa bài viết ---
 router.delete("/:id", verifyToken, async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id);
     if (!blog) return res.status(404).json({ error: "Không tìm thấy bài viết" });
 
-    // Nếu có ảnh → xóa file trong uploads/
-    if (blog.image) {
-      const imgPath = path.join(process.cwd(), blog.image);
-      if (fs.existsSync(imgPath)) {
-        fs.unlinkSync(imgPath);
-        console.log(`🗑 Ảnh ${blog.image} đã bị xóa`);
-      }
+    // Nếu ảnh nằm trên Cloudinary, xoá luôn
+    if (blog.image && blog.image.includes("cloudinary.com")) {
+      const parts = blog.image.split("/");
+      const publicId = parts.slice(-2).join("/").split(".")[0]; // lấy folder + tên file
+      await cloudinary.uploader.destroy(publicId);
+      console.log("🗑 Ảnh Cloudinary đã bị xóa:", publicId);
     }
 
     await Blog.findByIdAndDelete(req.params.id);
-    res.json({ message: "Đã xóa bài viết và ảnh kèm theo" });
+    res.json({ message: "✅ Đã xóa bài viết và ảnh Cloudinary (nếu có)" });
   } catch (error) {
+    console.error("❌ Delete Error:", error);
     res.status(500).json({ error: error.message });
   }
 });
-
-cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.CLOUD_API_KEY,
-  api_secret: process.env.CLOUD_API_SECRET
-});
-
-
 
 export default router;
