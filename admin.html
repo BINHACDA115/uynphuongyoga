@@ -195,7 +195,7 @@
     const formTitle = document.getElementById("formTitle");
     const submitBtn = document.getElementById("submitBtn");
     const imgPreview = document.getElementById("imgPreview");
-    const API = "https://yoga-blog-backend.onrender.com/api/blogs";
+    const API = "https://uynphuongyoga.onrender.com/api/blogs";
     const tokenStored = localStorage.getItem("token");
     let editingId = null;
 
@@ -282,7 +282,7 @@
       form.title.value = blog.title;
       form.shortDescription.value = blog.shortDescription;
       form.content.value = blog.content;
-      imgPreview.src = blog.image ? `http://localhost:5000${blog.image}` : "";
+      imgPreview.src = blog.image ? `https://uynphuongyoga.onrender.com${blog.image}` : "";
       editingId = id;
       submitBtn.textContent = "Cập nhật bài viết";
       formTitle.textContent = "Sửa Bài Viết";
