@@ -127,7 +127,17 @@
 
         container.innerHTML = blogs.map(b => `
           <article class="blog-card">
-            <img src="${b.image ? `https://uynphuongyoga.onrender.com${b.image}` : './assets/no-image.jpg'}" alt="${b.title}" class="blog-thumb">
+            <img 
+              src="${b.image 
+                ? (b.image.startsWith('http') 
+                  ? b.image 
+                  : `https://uynphuongyoga.onrender.com${b.image}`
+                ) 
+              : './assets/no-image.jpg'
+            }" 
+            alt="${b.title}" 
+            class="blog-thumb"
+            />
             <div class="blog-content">
               <h3>${b.title}</h3>
               <p>${b.shortDescription}</p>
