@@ -548,7 +548,7 @@ header {
 
 .article-content img {
   display: block;
-  max-width: 90%;         /* ✅ Ảnh nhỏ hơn chiều rộng trang */
+  max-width: 100%;         /* ✅ Ảnh nhỏ hơn chiều rộng trang */
   height: auto;           
   margin: 1.2rem auto;
   border-radius: 10px;
