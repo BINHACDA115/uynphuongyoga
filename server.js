@@ -16,7 +16,7 @@ mongoose.connect(process.env.MONGO_URI)
 
 // --- Middleware ---
 app.use(cors({
-  origin: ["https://https://uynphuongyoga.netlify.app"],
+  origin: ["https://uynphuongyoga.netlify.app"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
