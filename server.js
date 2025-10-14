@@ -42,3 +42,19 @@ app.use("/api/blogs", blogRoutes);
 
 // --- Khởi động server ---
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
+app.get("/api/cloud-test", async (req, res) => {
+  try {
+    const { v2: cloudinary } = await import("cloudinary");
+    cloudinary.config({
+      cloud_name: process.env.CLOUD_NAME,
+      api_key: process.env.CLOUD_API_KEY,
+      api_secret: process.env.CLOUD_API_SECRET,
+    });
+
+    const result = await cloudinary.api.ping();
+    res.json({ status: "✅ Connected to Cloudinary", result });
+  } catch (err) {
+    res.status(500).json({ status: "❌ Failed to connect", error: err.message });
+  }
+});
