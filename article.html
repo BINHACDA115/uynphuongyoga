@@ -53,33 +53,34 @@
 
   <!-- JavaScript: fetch bài viết theo ID -->
   <script>
-  const API_URL = "https://yoga-blog-backend.onrender.com/api/blogs";
-  const params = new URLSearchParams(window.location.search);
-  const blogId = params.get("id");
-  const container = document.getElementById("article-container");
+    const API_URL = "https://uynphuongyoga.onrender.com/api/blogs"; // ✅ Backend thật
+    const params = new URLSearchParams(window.location.search);
+    const blogId = params.get("id");
+    const container = document.getElementById("article-container");
 
-  if (!blogId) {
-    container.innerHTML = "<p class='text-center'>Không tìm thấy bài viết.</p>";
-  } else {
-    fetch(`${API_URL}/api/blogs/${blogId}`)
-      .then(res => res.json())
-      .then(blog => {
-        const imagePath = blog.image ? `${API_URL}${blog.image}` : "./assets/no-image.jpg";
-        container.innerHTML = `
-          <article class="article-content">
-            <h2 class="text-dark">${blog.title}</h2>
-            <p class="text-secondary">${new Date(blog.createdAt).toLocaleDateString("vi-VN")}</p>
-            <img src="${imagePath}" alt="${blog.title}" class="thumbnail" style="margin:20px 0; border-radius:10px;">
-            <p class="article-text">${blog.content}</p>
-          </article>
-        `;
-      })
-      .catch(err => {
-        console.error("Lỗi tải bài viết:", err);
-        container.innerHTML = "<p class='text-center text-danger'>Không thể tải dữ liệu từ server.</p>";
-      });
-  }
-</script>
-
+    if (!blogId) {
+      container.innerHTML = "<p class='text-center'>Không tìm thấy bài viết.</p>";
+    } else {
+      fetch(`${API_URL}/${blogId}`)
+        .then(res => res.json())
+        .then(blog => {
+          const imagePath = blog.image
+            ? `https://uynphuongyoga.onrender.com${blog.image}`
+            : "./assets/no-image.jpg";
+          container.innerHTML = `
+            <article class="article-content">
+              <h2 class="text-dark">${blog.title}</h2>
+              <p class="text-secondary">${new Date(blog.createdAt).toLocaleDateString("vi-VN")}</p>
+              <img src="${imagePath}" alt="${blog.title}" class="thumbnail" style="margin:20px 0; border-radius:10px;">
+              <p class="article-text">${blog.content}</p>
+            </article>
+          `;
+        })
+        .catch(err => {
+          console.error("Lỗi tải bài viết:", err);
+          container.innerHTML = "<p class='text-center text-danger'>Không thể tải dữ liệu từ server.</p>";
+        });
+    }
+  </script>
 </body>
 </html>
