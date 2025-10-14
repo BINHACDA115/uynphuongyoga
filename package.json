@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "description": "In this tutorial We are going to learn how to create a complete HTML and CSS Blog and make it responsive.",
-  "main": "main.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
