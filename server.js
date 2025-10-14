@@ -16,13 +16,11 @@ mongoose.connect(process.env.MONGO_URI)
 
 // --- Middleware ---
 app.use(cors({
-  origin: [
-    "https://https://uynphuongyoga.netlify.app",
-    "https://uynphuong-blog.netlify.app", // bạn có thể thêm domain thật sau khi đặt tên site
-  ],
+  origin: ["https://https://uynphuongyoga.netlify.app"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
+
 app.use(express.json());
 
 // --- Cho phép truy cập file ảnh upload ---
