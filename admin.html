@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin | Uyên Phương Yoga</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .admin-container {
+      max-width: 900px;
+      margin: 9em auto 5em;
+      background: var(--light);
+      border-radius: 12px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+      padding: 2.5rem;
+    }
+
+    .admin-container h2 {
+      text-align: center;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--dark);
+      margin-bottom: 1.5rem;
+    }
+
+    .admin-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .admin-form input, .admin-form textarea {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 0.9rem 1rem;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .admin-form input:focus, .admin-form textarea:focus {
+      border-color: var(--secondary-color);
+      outline: none;
+    }
+
+    .admin-form button {
+      background: var(--secondary-color);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .admin-form button:hover {
+      background: var(--primary-color);
+    }
+
+    .blog-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 3rem;
+    }
+
+    .blog-table th, .blog-table td {
+      border-bottom: 1px solid var(--border);
+      padding: 10px;
+      text-align: left;
+      font-size: 0.95rem;
+    }
+
+    .blog-table th {
+      background: #f5f5f5;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .blog-table button {
+      border: none;
+      color: #fff;
+      border-radius: 4px;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn-delete { background: #e74c3c; }
+    .btn-delete:hover { background: #c0392b; }
+
+    .btn-edit { background: #f39c12; margin-right: 5px; }
+    .btn-edit:hover { background: #d68910; }
+
+    .admin-success { color: var(--secondary-color); text-align: center; margin-top: 1rem; }
+    .admin-error { color: red; text-align: center; margin-top: 1rem; }
+
+    .preview {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    #logoutBtn {
+      color: var(--primary-color);
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Kiểm tra token -->
+  <script>
+    const token = localStorage.getItem("token");
+    if (!token) {
+      window.location.href = "login.html"; // nếu chưa đăng nhập
+    }
+  </script>
+
+  <!-- Header -->
+  <header id="header" class="shadow bg-light">
+    <nav class="container navbar">
+      <a href="index.html" class="nav-brand text-dark">
+        <img src="./assets/logo.png" alt="Uyên Phương Yoga">
+      </a>
+
+      <div class="collapse">
+        <ul class="navbar-nav">
+          <a href="blog.html" class="nav-link">Blog</a>
+          <a href="#" class="nav-link" id="logoutBtn">Đăng xuất</a>
+        </ul>
+      </div>
+
+      <div class="collapse">
+        <ul class="navbar-nav">
+          <a href="https://www.facebook.com/uyen.phuong.878507" target="_blank"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://www.tiktok.com/@uyenphuong1611" target="_blank"><i class="fab fa-tiktok"></i></a>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main -->
+  <main>
+    <div class="admin-container">
+      <h2 id="formTitle">Đăng Bài Viết Mới</h2>
+      <form id="blogForm" class="admin-form">
+        <input type="text" id="title" placeholder="Tiêu đề..." required>
+        <textarea id="shortDescription" placeholder="Mô tả ngắn..." required></textarea>
+
+        <!-- Upload ảnh -->
+        <label for="image">Chọn ảnh từ máy tính</label>
+        <input type="file" id="image" name="image" accept="image/*" onchange="previewUpload(event)">
+        <img id="imgPreview" class="preview" src="" alt="">
+
+        <textarea id="content" placeholder="Nội dung chi tiết..." rows="6" required></textarea>
+
+        <button type="submit" id="submitBtn">Đăng bài viết</button>
+        <p id="formStatus" class="admin-success"></p>
+      </form>
+
+      <h2>Danh Sách Bài Viết</h2>
+      <table class="blog-table" id="blogTable">
+        <thead>
+          <tr>
+            <th>Tiêu đề</th>
+            <th>Ngày tạo</th>
+            <th>Hành động</th>
+          </tr>
+        </thead>
+        <tbody id="blogList">
+          <tr><td colspan="3" style="text-align:center;">Đang tải...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer id="footer">
+    <div class="container">
+      <p class="text-center text-secondary display-2">
+        © 2025 <a href="#" class="text-primary">Uyên Phương Yoga</a> - All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    const form = document.getElementById("blogForm");
+    const status = document.getElementById("formStatus");
+    const blogList = document.getElementById("blogList");
+    const formTitle = document.getElementById("formTitle");
+    const submitBtn = document.getElementById("submitBtn");
+    const imgPreview = document.getElementById("imgPreview");
+    const API = "http://localhost:5000/api/blogs";
+    const tokenStored = localStorage.getItem("token");
+    let editingId = null;
+
+    // Xem trước ảnh upload
+    function previewUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        imgPreview.src = URL.createObjectURL(file);
+      }
+    }
+
+    // Đăng xuất
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      if (confirm("Bạn có chắc muốn đăng xuất?")) {
+        localStorage.removeItem("token");
+        window.location.href = "login.html";
+      }
+    });
+
+    // Thêm hoặc cập nhật bài viết
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData();
+      formData.append("title", form.title.value);
+      formData.append("shortDescription", form.shortDescription.value);
+      formData.append("content", form.content.value);
+      formData.append("image", form.image.files[0]);
+
+      try {
+        const res = await fetch(editingId ? `${API}/${editingId}` : API, {
+          method: editingId ? "PUT" : "POST",
+          headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+,
+          body: formData
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          status.textContent = editingId ? "✅ Cập nhật thành công!" : "✅ Đăng bài thành công!";
+          status.className = "admin-success";
+          form.reset();
+          imgPreview.src = "";
+          editingId = null;
+          submitBtn.textContent = "Đăng bài viết";
+          formTitle.textContent = "Đăng Bài Viết Mới";
+          loadBlogs();
+        } else {
+          status.textContent = "❌ " + (data.error || "Có lỗi xảy ra.");
+          status.className = "admin-error";
+        }
+      } catch (err) {
+        status.textContent = "❌ Không kết nối được server.";
+        status.className = "admin-error";
+      }
+    });
+
+    // Load danh sách bài viết
+    async function loadBlogs() {
+      try {
+        const res = await fetch(API);
+        const blogs = await res.json();
+        if (!blogs.length) {
+          blogList.innerHTML = "<tr><td colspan='3' style='text-align:center;'>Chưa có bài viết nào</td></tr>";
+          return;
+        }
+        blogList.innerHTML = blogs.map(b => `
+          <tr>
+            <td>${b.title}</td>
+            <td>${new Date(b.createdAt).toLocaleDateString("vi-VN")}</td>
+            <td>
+              <button class="btn-edit" onclick="editBlog('${b._id}')"><i class="fas fa-edit"></i> Sửa</button>
+              <button class="btn-delete" onclick="deleteBlog('${b._id}')"><i class="fas fa-trash"></i> Xóa</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        blogList.innerHTML = "<tr><td colspan='3' style='text-align:center;color:red;'>Không tải được dữ liệu</td></tr>";
+      }
+    }
+
+    // Sửa bài viết
+    async function editBlog(id) {
+      const res = await fetch(`${API}/${id}`);
+      const blog = await res.json();
+      form.title.value = blog.title;
+      form.shortDescription.value = blog.shortDescription;
+      form.content.value = blog.content;
+      imgPreview.src = blog.image ? `http://localhost:5000${blog.image}` : "";
+      editingId = id;
+      submitBtn.textContent = "Cập nhật bài viết";
+      formTitle.textContent = "Sửa Bài Viết";
+      window.scrollTo({ top: 100, behavior: 'smooth' });
+    }
+
+    // Xóa bài viết
+    async function deleteBlog(id) {
+      if (!confirm("Bạn có chắc muốn xóa bài viết này?")) return;
+      try {
+        const res = await fetch(`${API}/${id}`, {
+          method: "DELETE",
+          headers: { "Authorization": `Bearer ${tokenStored}` }
+        });
+        if (res.ok) {
+          alert("✅ Đã xóa bài viết!");
+          loadBlogs();
+        } else {
+          alert("❌ Lỗi khi xóa bài viết.");
+        }
+      } catch (err) {
+        alert("❌ Không kết nối được server.");
+      }
+    }
+
+    // Khi trang tải xong
+    loadBlogs();
+  </script>
+</body>
+</html>

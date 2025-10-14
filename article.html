@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bài Viết | Uyên Phương Yoga</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <!-- Header -->
+  <header id="header" class="shadow bg-light">
+    <nav class="container navbar">
+      <a href="index.html" class="nav-brand text-dark">
+        <img src="./assets/logo.png" alt="Uyên Phương Yoga">
+      </a>
+
+      <div class="collapse">
+        <ul class="navbar-nav">
+          <a href="blog.html" class="nav-link">Blog</a>
+          <a href="contact.html" class="nav-link">Contact</a>
+        </ul>
+      </div>
+
+      <div class="collapse">
+        <ul class="navbar-nav">
+          <a href="https://www.facebook.com/uyen.phuong.878507" target="_blank"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://www.tiktok.com/@uyenphuong1611" target="_blank"><i class="fab fa-tiktok"></i></a>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Article content -->
+  <main id="site-main" style="margin-top:8em;">
+    <section class="container article-detail">
+      <div id="article-container">
+        <!-- Nội dung bài viết sẽ được render ở đây -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer id="footer">
+    <div class="container">
+      <p class="text-center text-secondary display-2">
+        © 2025 <a href="#" class="text-primary">Uyên Phương Yoga</a> - All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  <!-- JavaScript: fetch bài viết theo ID -->
+  <script>
+  const API_URL = "http://localhost:5000";
+  const params = new URLSearchParams(window.location.search);
+  const blogId = params.get("id");
+  const container = document.getElementById("article-container");
+
+  if (!blogId) {
+    container.innerHTML = "<p class='text-center'>Không tìm thấy bài viết.</p>";
+  } else {
+    fetch(`${API_URL}/api/blogs/${blogId}`)
+      .then(res => res.json())
+      .then(blog => {
+        const imagePath = blog.image ? `${API_URL}${blog.image}` : "./assets/no-image.jpg";
+        container.innerHTML = `
+          <article class="article-content">
+            <h2 class="text-dark">${blog.title}</h2>
+            <p class="text-secondary">${new Date(blog.createdAt).toLocaleDateString("vi-VN")}</p>
+            <img src="${imagePath}" alt="${blog.title}" class="thumbnail" style="margin:20px 0; border-radius:10px;">
+            <p class="article-text">${blog.content}</p>
+          </article>
+        `;
+      })
+      .catch(err => {
+        console.error("Lỗi tải bài viết:", err);
+        container.innerHTML = "<p class='text-center text-danger'>Không thể tải dữ liệu từ server.</p>";
+      });
+  }
+</script>
+
+</body>
+</html>

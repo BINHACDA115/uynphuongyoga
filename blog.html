@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog | Uyên Phương Yoga</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <!-- Header -->
+  <header id="header" class="shadow bg-light">
+    <nav class="container navbar">
+      <a href="index.html" class="nav-brand text-dark">
+        <img src="./assets/logo.png" alt="Uyên Phương Yoga">
+      </a>
+
+      <div class="collapse">
+        <ul class="navbar-nav">
+          <a href="blog.html" class="nav-link text-primary">Blog</a>
+          <a href="contact.html" class="nav-link">Contact</a>
+        </ul>
+      </div>
+
+      <div class="collapse">
+        <ul class="navbar-nav">
+          <a href="https://www.facebook.com/uyen.phuong.878507" target="_blank"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://www.tiktok.com/@uyenphuong1611" target="_blank"><i class="fab fa-tiktok"></i></a>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Blog Section -->
+  <main id="site-main" style="margin-top:8em;">
+    <section class="container blog-list">
+      <h2 class="text-center text-dark mb-3">Bài Viết Mới Nhất</h2>
+
+      <div class="blog-grid">
+        <!-- Bài viết sẽ được render tự động bằng fetch() -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer id="footer">
+    <div class="container">
+      <p class="text-center text-secondary display-2">
+        © 2025 <a href="#" class="text-primary">Uyên Phương Yoga</a> - All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  <!-- JavaScript fetch API -->
+  <script>
+    fetch("http://localhost:5000/api/blogs")
+      .then(res => res.json())
+      .then(blogs => {
+        const container = document.querySelector(".blog-grid");
+
+        if (!blogs.length) {
+          container.innerHTML = "<p class='text-center'>Chưa có bài viết nào.</p>";
+          return;
+        }
+
+        container.innerHTML = blogs.map(b => `
+          <article class="blog-card">
+            <img src="http://localhost:5000${b.image}" alt="" class="blog-thumb">
+            <div class="blog-content">
+              <h3>${b.title}</h3>
+              <p>${b.shortDescription}</p>
+              <a href="article.html?id=${b._id}" class="read-more">Đọc tiếp →</a>
+            </div>
+          </article>
+        `).join('');
+      })
+      .catch(err => {
+        console.error("Lỗi khi tải bài viết:", err);
+        document.querySelector(".blog-grid").innerHTML =
+          "<p class='text-center text-danger'>Không thể tải dữ liệu từ server.</p>";
+      });
+  </script>
+</body>
+</html>
