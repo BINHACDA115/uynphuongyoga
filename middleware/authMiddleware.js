@@ -8,7 +8,7 @@ export const verifyToken = (req, res, next) => {
 
   const token = authHeader.split(" ")[1]; // bỏ chữ 'Bearer'
   jwt.verify(token, SECRET, (err, user) => {
-    if (err) return res.status(403).json({ error: "Token không hợp lệ hoặc hết hạn" });
+    if (err) return res.status(403).json({ error: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
     req.user = user;
     next();
   });
