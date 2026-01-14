@@ -1,4 +1,8 @@
 {
+  "main": "uynphuongyoga/server.js",
+  "scripts": {
+    "start": "node uynphuongyoga/server.js"
+  },
   "dependencies": {
     "dotenv": "^17.2.3"
   }
