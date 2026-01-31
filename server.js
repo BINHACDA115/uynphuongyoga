@@ -17,7 +17,7 @@ mongoose.connect(process.env.MONGO_URI)
 
 // --- Middleware ---
 app.use(cors({
-  origin: ["https://uynphuongyoga1.onrender.com"],
+  origin: ["https://uynphuongyoga.onrender.com"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
